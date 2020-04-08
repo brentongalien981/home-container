@@ -1,0 +1,42 @@
+.RateBar {
+    text-align: left;
+}
+
+.rate-status-container {
+    background-color: rgb(190, 190, 190);
+    /*background-color: rgb(170, 170, 170);*/
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+.rate-status-holder {
+    /*background-color: greenyellow;*/
+}
+
+
+.rate-status-item-container {
+    /*background-color: aliceblue;*/
+    display: inline-block;
+    padding: 5px 35px;
+    border-radius: 10px;
+    border: 1px solid rgb(80, 80, 80);
+    margin-right: 15px;
+}
+
+.rate-status-item-symbol {
+    padding-right: 8px;
+    border-right: 1px solid rgb(80, 80, 80);
+    font-size: 110%;
+    font-weight: 300;
+}
+
+.rate-status-item-value {
+    padding-left: 10px;
+    font-size: 80%;
+    font-weight: 100;
+}
+
+.rate-status-item-img-value {
+    padding-left: 10px;
+    width: 30px;
+}

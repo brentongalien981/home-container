@@ -5,7 +5,7 @@ import axios from 'axios';
 class Core {
 
 
-    static appUrl = "http://myg.test:8000/api";
+    static appUrl = "http://myg.test:8000";
 
     static yspCrud(data = {}) {
 
