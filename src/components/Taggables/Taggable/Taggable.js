@@ -1,11 +1,26 @@
 import React from 'react';
 import RateBar from '../../Rateables/RateBar/RateBar';
-import './Post.css';
+import './Taggable.css';
 
-function Post() {
+function Post(props) {
 
+
+    let taggableMainContent = null;
+
+    switch (props.taggable.taggable_type) {
+        case 'post':
+            taggableMainContent = (<p>{props.taggable.message}</p>);
+            break;
+        case 'video':
+            taggableMainContent = (<iframe src={props.taggable.url}></iframe>);
+            break;
+    }
+
+
+
+    //
     return (
-        <div className="Taggable Post">
+        <div className="Taggable">
 
             <div id="" className="">
 
@@ -34,14 +49,12 @@ function Post() {
 
 
                 {/* post-message */}
-                <div className="postMsgContainer justify-content-left">
-                    <p className="">message2 post on Bren, by Bren</p>
-                </div>
+                <div className="taggableMainContentHolder justify-content-left">{taggableMainContent}</div>
 
 
                 {/* response-bar */}
                 <RateBar />
-                
+
 
 
 

@@ -1,6 +1,7 @@
-.Post {
+.Taggable {
     border: 1px solid black;
     padding: 20px;
+    margin-bottom: 50px;
 }
 
 .profilePicContainer,
@@ -24,14 +25,21 @@
 }
 
 
-.postMsgContainer,
+.taggableMainContentHolder,
 .viewMoreCommentsBtnHolder,
 .replyForm {
     text-align: left;
 }
 
 
-.postMsgContainer {
+.taggableMainContentHolder {
     border: 1px solid black;
     margin: 20px 0;
+    padding: 0;
+    /* width: 600px; */
+}
+
+.taggableMainContentHolder iframe {
+    width: 550px;
+    height: calc(550px * 0.5625);
 }

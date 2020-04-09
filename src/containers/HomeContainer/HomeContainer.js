@@ -1,7 +1,7 @@
 import React from 'react';
 import Core from '../../ysp-core/Core';
 import './HomeContainer.css';
-import Post from '../../components/Taggables/Post/Post';
+import Taggable from '../../components/Taggables/Taggable/Taggable';
 
 
 class HomeContainer extends React.Component {
@@ -10,7 +10,10 @@ class HomeContainer extends React.Component {
         super(props);
 
         this.state = {
-            taggables: [],
+            taggables: [
+                { id: 1, taggable_type: 'post', message: 'shit boi' },
+                { id: 2, taggable_type: 'video', url: 'https://www.youtube.com/embed/oyEuk8j8imI?rel=0&amp;controls=0&amp;showinfo=0' },
+            ],
             friendSuggestions: []
         };
 
@@ -38,15 +41,17 @@ class HomeContainer extends React.Component {
 
     render() {
 
-        let taggablesComponent = (
+        let taggables = this.state.taggables.map((taggable, i) => {
+            return (<Taggable key={i} taggable={taggable} />);
+        });
+
+        let taggablesHolder = (
             <div className="col-md-8">
                 <h4>Taggables</h4>
-
-                <Post />
-                
-            
+                {taggables}
             </div>
         );
+        
 
 
         let friendSuggestionsComponent = (
@@ -58,7 +63,7 @@ class HomeContainer extends React.Component {
         return (
             <div className="container">
                 <div className="row">
-                    {taggablesComponent}
+                    {taggablesHolder}
                     {friendSuggestionsComponent}
                 </div>
             </div>
