@@ -127,7 +127,7 @@ class App extends React.Component {
 			appComponent = (
 				<div className="App">
 					{signInComponent}
-					<HomeContainer />
+					<HomeContainer token={this.state.token} />
 				</div>
 			);
 		} else {

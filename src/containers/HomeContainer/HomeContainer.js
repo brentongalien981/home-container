@@ -28,12 +28,12 @@ class HomeContainer extends React.Component {
     componentDidMount() {
 
         Core.yspCrud({
-            url: '/test2',
+            url: '/user-relationship/getSuggestions',
             params: {
-                api_token: this.state.token
+                api_token: this.props.token
             },
             callBackFunc: (requestData, json) => {
-
+                this.setState({ friendSuggestions: json.objs });
             }
         });
     }
@@ -41,6 +41,7 @@ class HomeContainer extends React.Component {
 
     render() {
 
+        //
         let taggables = this.state.taggables.map((taggable, i) => {
             return (<Taggable key={i} taggable={taggable} />);
         });
@@ -51,12 +52,38 @@ class HomeContainer extends React.Component {
                 {taggables}
             </div>
         );
-        
+
+
+
+        //
+        let friendSuggestions = this.state.friendSuggestions.map((user, i) => {
+            let profilePicUrl = Core.appUrl + Core.defaultProfilePicUrl;
+            profilePicUrl = user.profile.photo_url ? Core.appUrl + user.profile.photo_url : profilePicUrl;
+
+            let fullName = user.profile.first_name ? user.profile.first_name : '';
+            fullName += user.profile.last_name ? ' ' + user.profile.last_name : '';
+
+            return (
+                <li key={user.id} className='SearchedUserItem'>
+                    <div>
+                        <a href={'/' + user.name}>
+                            <img id="userPhoto" src={profilePicUrl} className="img-fluid d-block rounded" alt="profile-picture" />
+                        </a>
+                    </div>
+
+                    <div>
+                        <h6 className='username'><a href={'/' + user.name}>{'@' + user.name}</a></h6>
+                        <label className='fullName'>{fullName}</label>
+                    </div>
+                </li>
+            );
+        });
 
 
         let friendSuggestionsComponent = (
-            <div className="col-md-4">
+            <div className="SearchedResult col-md-4">
                 <h4>Friend Suggestions</h4>
+                <ul>{friendSuggestions}</ul>
             </div>
         );
 

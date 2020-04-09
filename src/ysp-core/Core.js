@@ -6,6 +6,7 @@ class Core {
 
 
     static appUrl = "http://myg.test:8000";
+    static defaultProfilePicUrl = '/storage/avatars/PCGi4R5tRKekR3N3Pq02fCpQKy7LFkRoKRQ297lI.jpeg';
 
     static yspCrud(data = {}) {
 

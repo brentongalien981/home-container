@@ -1,0 +1,39 @@
+.SearchedResult ul {
+    /* margin-left: 0; */
+}
+
+.SearchedUserItem {
+    border-bottom: 1px solid rgb(245, 245, 245);
+    list-style-type: none;
+    text-align: left;
+}
+
+.SearchedUserItem div {
+    display: inline-block;
+    vertical-align: top;
+    /* background-color: yellow; */
+    padding: 10px;
+    padding-left: 0;
+}
+
+.SearchedUserItem img {
+    width: 50px;
+}
+
+.SearchedUserItem .username,
+.SearchedUserItem .fullName {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 400px;
+}
+
+
+.SearchedUserItem .username {
+    font-weight: 200;
+}
+
+.SearchedUserItem .fullName {
+    font-weight: 200;
+    font-size: 0.8rem;
+
+}
