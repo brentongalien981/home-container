@@ -2,6 +2,7 @@ import React from 'react';
 import Core from '../../ysp-core/Core';
 import './HomeContainer.css';
 import Taggable from '../../components/Taggables/Taggable/Taggable';
+import FollowButton from '../../components/FollowButton/FollowButton';
 
 
 class HomeContainer extends React.Component {
@@ -19,7 +20,45 @@ class HomeContainer extends React.Component {
 
 
         //
-        // this.handleSubmitBtnClicked = this.handleSubmitBtnClicked.bind(this);      
+        this.handleFollowBtnClicked = this.handleFollowBtnClicked.bind(this);
+
+    }
+
+
+
+    handleFollowBtnClicked(e, i) {
+        // TODO
+        console.log("\n\n\nin method:: handleFollowBtnClicked()");
+        console.log("e.target ==> " + e.target);
+        console.log("i ==> " + i);
+
+        let updatedFriendSuggestions = this.state.friendSuggestions;
+        const friendSuggestion = updatedFriendSuggestions[i];
+        if (friendSuggestion.isProcessing) { return; }
+        updatedFriendSuggestions[i].isProcessing = true;
+
+        this.setState({ friendSuggestions: updatedFriendSuggestions });
+
+
+        //
+        const url = "/user-relationship/requestRelationship/" + friendSuggestion.name;
+        
+        Core.yspCrud({
+            method: 'post',
+            url: url,
+            params: {
+                api_token: this.props.token,
+                userName: friendSuggestion.name,
+                relationshipRequestId: friendSuggestion.relationship
+            },
+            callBackFunc: (requestData, json) => {
+
+                updatedFriendSuggestions[i].relationship = json.originalResultData;
+                updatedFriendSuggestions[i].isProcessing = false;
+                this.setState({ friendSuggestions: updatedFriendSuggestions });
+            }
+        });
+
 
     }
 
@@ -33,7 +72,16 @@ class HomeContainer extends React.Component {
                 api_token: this.props.token
             },
             callBackFunc: (requestData, json) => {
-                this.setState({ friendSuggestions: json.objs });
+
+                // Modify the objs for the FollowButton component.
+                let modifiedFriendSuggestions = [];
+                for (const u of json.objs) {
+                    u['isProcessing'] = false;
+                    u['relationship'] = 0;
+                    modifiedFriendSuggestions.push(u);
+                }
+
+                this.setState({ friendSuggestions: modifiedFriendSuggestions });
             }
         });
     }
@@ -74,6 +122,11 @@ class HomeContainer extends React.Component {
                     <div>
                         <h6 className='username'><a href={'/' + user.name}>{'@' + user.name}</a></h6>
                         <label className='fullName'>{fullName}</label>
+
+                        <FollowButton
+                            click={(e) => this.handleFollowBtnClicked(e, i)}
+                            isProcessing={user.isProcessing}
+                            relationship={user.relationship} />
                     </div>
                 </li>
             );

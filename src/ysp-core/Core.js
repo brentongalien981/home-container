@@ -23,6 +23,7 @@ class Core {
 
         // 
         let json = {
+            originalResultData: null,
             is_result_ok: false,
             isResultOk: false,
             objs: [],
@@ -48,6 +49,7 @@ class Core {
 
                 const jsonData = response.data;
 
+                json.originalResultData = jsonData;
                 json.is_result_ok = jsonData["isResultOk"];
                 json.isResultOk = jsonData["isResultOk"];
                 json.objs = jsonData["objs"];

@@ -1,3 +1,4 @@
+/* FriendSuggestions */
 .SearchedResult ul {
     /* margin-left: 0; */
 }
@@ -17,7 +18,7 @@
 }
 
 .SearchedUserItem img {
-    width: 50px;
+    width: 70px;
 }
 
 .SearchedUserItem .username,
@@ -25,15 +26,23 @@
     text-overflow: ellipsis;
     overflow: hidden;
     max-width: 400px;
+    margin-bottom: 0;
 }
 
 
 .SearchedUserItem .username {
     font-weight: 200;
+    font-size: 0.9rem;
 }
 
 .SearchedUserItem .fullName {
     font-weight: 200;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
 
+}
+
+.SearchedUserItem .FollowButton {
+    display: block;
+    padding: .2rem .5rem;
+    font-size: 0.7rem;
 }
