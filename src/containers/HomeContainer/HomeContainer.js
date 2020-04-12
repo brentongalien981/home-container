@@ -11,14 +11,11 @@ class HomeContainer extends React.Component {
         super(props);
 
         this.state = {
-            taggables: [
-                { id: 1, type: 'post', message: 'shit boi' },
-                { id: 2, type: 'video', url: 'https://www.youtube.com/embed/oyEuk8j8imI?rel=0&amp;controls=0&amp;showinfo=0' },
-            ],
+            taggables: [],
             friendSuggestions: [],
             alreadyRecommendedVideoIds: [],
             alreadyRecommendedPhotoIds: [],
-            alreadyRecommendedPostIds: [],
+            alreadyRecommendedTimelinePostIds: [],
             numOfItemsWantedPerSort: 10
         };
 
@@ -66,11 +63,16 @@ class HomeContainer extends React.Component {
     setTaggables(data) {
         console.log("\n\n\nin method:: setTaggables()");
 
-        let xTaggables = [];
+        let xTaggables = {
+            Video: [],
+            TimelinePost : [],
+            // Photo: []
+        };
 
-        // ish
+        // Organize the taggables.
         for (const type in data) {
             const element = data[type];
+            console.log("type ==> " + type);
 
             let recentXTaggables = element.orderByDate.xTaggables;
             let topXTaggables = element.orderByTally.xTaggables;
@@ -80,27 +82,38 @@ class HomeContainer extends React.Component {
                 let recentElement = recentXTaggables[i];
                 let topElement = topXTaggables[i];
     
-                console.log("recentElement ==> " + recentElement?.title);
-                console.log("topElement ==> " + topElement?.title);
-    
                 if (recentElement != null) {
                     recentElement.type = type;
-                    xTaggables.push(recentElement);
+                    xTaggables[type].push(recentElement);
                 }
                 if (topElement != null) {
                     topElement.type = type;
-                    xTaggables.push(topElement);
+                    xTaggables[type].push(topElement);
                 }
             }
         }
 
 
-        // TODO:
+
+        // Mix the taggables.
+        let newTaggables = [];
+        for (let i = 0; i < this.state.numOfItemsWantedPerSort; i++) {
+            if (xTaggables.TimelinePost[i]) { newTaggables.push(xTaggables.TimelinePost[i]); }
+            if (xTaggables.Video[i]) { newTaggables.push(xTaggables.Video[i]); }
+            // if (xTaggables.Photo[i]) { newTaggables.push(xTaggables.Photo[i]); }
+        }
+
+
+
+        // Update state taggables.
+        const oldTaggables = this.state.taggables;
+        const updatedTaggables = [...oldTaggables, ...newTaggables];
+
         this.setState({ 
-            taggables: xTaggables,
+            taggables: updatedTaggables,
             alreadyRecommendedVideoIds: data.Video.alreadyRecommendedXTaggableIds,
-            // alreadyRecommendedPostIds: data.Post.alreadyRecommendedXTaggableIds,
-            // alreadyRecommendedPhotoIds: data.Photo.alreadyRecommendedXTaggableIds
+            alreadyRecommendedTimelinePostIds: data.TimelinePost.alreadyRecommendedXTaggableIds,
+            // alreadyRecommendedPhotoIds: data.Photo.alreadyRecommendedXTaggableIds            
         });
     }
 
@@ -112,7 +125,8 @@ class HomeContainer extends React.Component {
         Core.yspCrud({
             url: '/taggable/getSuggestions',
             params: {
-                api_token: this.props.token
+                api_token: this.props.token,
+                numOfItemsWanted: this.state.numOfItemsWantedPerSort
             },
             callBackFunc: (requestData, json) => {
                 this.setTaggables(json.objs);

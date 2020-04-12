@@ -1,14 +1,17 @@
 import React from 'react';
 import RateBar from '../../Rateables/RateBar/RateBar';
 import './Taggable.css';
+import Core from '../../../ysp-core/Core';
 
 function Post(props) {
 
 
     let taggableMainContent = null;
 
+    const posterProfilePhotoUrl = Core.appUrl + '/' + (props.taggable.posterProfilePhotoUrl ? props.taggable.posterProfilePhotoUrl : Core.defaultProfilePicUrl);
+
     switch (props.taggable.type) {
-        case 'Post':
+        case 'TimelinePost':
             taggableMainContent = (<p>{props.taggable.message}</p>);
             break;
         case 'Video':
@@ -31,13 +34,13 @@ function Post(props) {
                     <div>
                         {/* profile-pic */}
                         <div className="profilePicContainer">
-                            <img className="" src="http://myg.test:8000/storage/avatars/nv8GU1TFX6Id4iHY8yhAjneLS7FFHEgQUytP6NrR.jpeg" />
+                            <img className="" src={posterProfilePhotoUrl} />
                         </div>
 
                         {/* post-details */}
                         <div className="postMetaDetails">
-                            <h4 className="">bren</h4>
-                            <h5 className="">2 weeks ago</h5>
+                            <h4 className="">{props.taggable.posterUsername}</h4>
+                            <h5 className="">{props.taggable.creationDate}</h5>
                         </div>
                     </div>
 
