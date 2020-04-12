@@ -12,10 +12,14 @@ class HomeContainer extends React.Component {
 
         this.state = {
             taggables: [
-                { id: 1, taggable_type: 'post', message: 'shit boi' },
-                { id: 2, taggable_type: 'video', url: 'https://www.youtube.com/embed/oyEuk8j8imI?rel=0&amp;controls=0&amp;showinfo=0' },
+                { id: 1, type: 'post', message: 'shit boi' },
+                { id: 2, type: 'video', url: 'https://www.youtube.com/embed/oyEuk8j8imI?rel=0&amp;controls=0&amp;showinfo=0' },
             ],
-            friendSuggestions: []
+            friendSuggestions: [],
+            alreadyRecommendedVideoIds: [],
+            alreadyRecommendedPhotoIds: [],
+            alreadyRecommendedPostIds: [],
+            numOfItemsWantedPerSort: 10
         };
 
 
@@ -27,11 +31,8 @@ class HomeContainer extends React.Component {
 
 
     handleFollowBtnClicked(e, i) {
-        // TODO
-        console.log("\n\n\nin method:: handleFollowBtnClicked()");
-        console.log("e.target ==> " + e.target);
-        console.log("i ==> " + i);
 
+        // Disable btn.
         let updatedFriendSuggestions = this.state.friendSuggestions;
         const friendSuggestion = updatedFriendSuggestions[i];
         if (friendSuggestion.isProcessing) { return; }
@@ -42,7 +43,7 @@ class HomeContainer extends React.Component {
 
         //
         const url = "/user-relationship/requestRelationship/" + friendSuggestion.name;
-        
+
         Core.yspCrud({
             method: 'post',
             url: url,
@@ -58,14 +59,69 @@ class HomeContainer extends React.Component {
                 this.setState({ friendSuggestions: updatedFriendSuggestions });
             }
         });
+    }
 
 
+
+    setTaggables(data) {
+        console.log("\n\n\nin method:: setTaggables()");
+
+        let xTaggables = [];
+
+        // ish
+        for (const type in data) {
+            const element = data[type];
+
+            let recentXTaggables = element.orderByDate.xTaggables;
+            let topXTaggables = element.orderByTally.xTaggables;
+
+
+            for (let i = 0; i < this.state.numOfItemsWantedPerSort; i++) {
+                let recentElement = recentXTaggables[i];
+                let topElement = topXTaggables[i];
+    
+                console.log("recentElement ==> " + recentElement?.title);
+                console.log("topElement ==> " + topElement?.title);
+    
+                if (recentElement != null) {
+                    recentElement.type = type;
+                    xTaggables.push(recentElement);
+                }
+                if (topElement != null) {
+                    topElement.type = type;
+                    xTaggables.push(topElement);
+                }
+            }
+        }
+
+
+        // TODO:
+        this.setState({ 
+            taggables: xTaggables,
+            alreadyRecommendedVideoIds: data.Video.alreadyRecommendedXTaggableIds,
+            // alreadyRecommendedPostIds: data.Post.alreadyRecommendedXTaggableIds,
+            // alreadyRecommendedPhotoIds: data.Photo.alreadyRecommendedXTaggableIds
+        });
     }
 
 
 
     componentDidMount() {
 
+        // taggables
+        Core.yspCrud({
+            url: '/taggable/getSuggestions',
+            params: {
+                api_token: this.props.token
+            },
+            callBackFunc: (requestData, json) => {
+                this.setTaggables(json.objs);
+            }
+        });
+
+
+
+        // friendSuggestions
         Core.yspCrud({
             url: '/user-relationship/getSuggestions',
             params: {

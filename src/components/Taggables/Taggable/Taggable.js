@@ -7,12 +7,13 @@ function Post(props) {
 
     let taggableMainContent = null;
 
-    switch (props.taggable.taggable_type) {
-        case 'post':
+    switch (props.taggable.type) {
+        case 'Post':
             taggableMainContent = (<p>{props.taggable.message}</p>);
             break;
-        case 'video':
-            taggableMainContent = (<iframe src={props.taggable.url}></iframe>);
+        case 'Video':
+            const youtubeEmbedExtras = "?rel=0&amp;controls=0&amp;showinfo=0";
+            taggableMainContent = (<iframe src={props.taggable.url + youtubeEmbedExtras}></iframe>);
             break;
     }
 
