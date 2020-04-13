@@ -3,6 +3,7 @@ import RateBar from '../../Rateables/RateBar/RateBar';
 import './Taggable.css';
 import Core from '../../../ysp-core/Core';
 import Comment from '../../Comment/Comment';
+import Options from './Options/Options';
 
 function Post(props) {
 
@@ -59,7 +60,10 @@ function Post(props) {
 
 
                     {/* post-settings-icon */}
-                    <div className="settings-icon-container"><i className="fa fa-sliders settings-icon"></i></div>
+                    <div className="settings-icon-container">
+                        <i className="fa fa-sliders settings-icon"></i>
+                        <Options />
+                    </div>
                 </div>
 
 
