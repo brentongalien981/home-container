@@ -1,6 +1,7 @@
 import React from 'react';
 import './RateBar.css';
 import Core from '../../../ysp-core/Core';
+import RateOptions from './RateOptions/RateOptions';
 
 function RateBar(props) {
 
@@ -30,6 +31,8 @@ function RateBar(props) {
 
                     <img className="rate-status-item-img-value rate-options-pop-up-trigger-elelements" src={rateByUser.photo_url} alt={rateByUser.alt} />
 
+                    {/*  */}
+                    <RateOptions />
                 </div>
 
 

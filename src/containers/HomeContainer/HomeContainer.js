@@ -7,6 +7,9 @@ import FollowButton from '../../components/FollowButton/FollowButton';
 
 class HomeContainer extends React.Component {
 
+    //
+    static rates = [];
+
     constructor(props) {
         super(props);
 
@@ -65,7 +68,7 @@ class HomeContainer extends React.Component {
 
         let xTaggables = {
             Video: [],
-            TimelinePost : [],
+            TimelinePost: [],
             // Photo: []
         };
 
@@ -81,7 +84,7 @@ class HomeContainer extends React.Component {
             for (let i = 0; i < this.state.numOfItemsWantedPerSort; i++) {
                 let recentElement = recentXTaggables[i];
                 let topElement = topXTaggables[i];
-    
+
                 if (recentElement != null) {
                     recentElement.type = type;
                     xTaggables[type].push(recentElement);
@@ -109,7 +112,7 @@ class HomeContainer extends React.Component {
         const oldTaggables = this.state.taggables;
         const updatedTaggables = [...oldTaggables, ...newTaggables];
 
-        this.setState({ 
+        this.setState({
             taggables: updatedTaggables,
             alreadyRecommendedVideoIds: data.Video.alreadyRecommendedXTaggableIds,
             alreadyRecommendedTimelinePostIds: data.TimelinePost.alreadyRecommendedXTaggableIds,
@@ -119,7 +122,7 @@ class HomeContainer extends React.Component {
 
 
 
-    componentDidMount() {
+    initItems() {
 
         // taggables
         Core.yspCrud({
@@ -157,9 +160,27 @@ class HomeContainer extends React.Component {
     }
 
 
+
+    componentDidMount() {
+
+        // ish
+        Core.yspCrud({
+            url: '/rate/read',
+            params: {
+                api_token: this.props.token,
+            },
+            callBackFunc: (requestData, json) => {
+                HomeContainer.rates = json.objs;
+
+                this.initItems();
+            }
+        });
+    }
+
+
     render() {
 
-        //
+        // TODO: Refactor
         let taggables = this.state.taggables.map((taggable, i) => {
             return (<Taggable key={i} taggable={taggable} />);
         });
@@ -173,7 +194,7 @@ class HomeContainer extends React.Component {
 
 
 
-        //
+        // TODO: Refactor
         let friendSuggestions = this.state.friendSuggestions.map((user, i) => {
             let profilePicUrl = Core.appUrl + Core.defaultProfilePicUrl;
             profilePicUrl = user.profile.photo_url ? Core.appUrl + user.profile.photo_url : profilePicUrl;
