@@ -2,6 +2,7 @@ import React from 'react';
 import RateBar from '../../Rateables/RateBar/RateBar';
 import './Taggable.css';
 import Core from '../../../ysp-core/Core';
+import Comment from '../../Comment/Comment';
 
 function Post(props) {
 
@@ -10,13 +11,25 @@ function Post(props) {
 
     const posterProfilePhotoUrl = Core.appUrl + '/' + (props.taggable.posterProfilePhotoUrl ? props.taggable.posterProfilePhotoUrl : Core.defaultProfilePicUrl);
 
+
+    let comments = props.taggable.comments.map((c, i) => {
+        return (<Comment key={c.id} index={i} comment={c} />);
+    });
+
+
+
     switch (props.taggable.type) {
         case 'TimelinePost':
             taggableMainContent = (<p>{props.taggable.message}</p>);
             break;
         case 'Video':
             const youtubeEmbedExtras = "?rel=0&amp;controls=0&amp;showinfo=0";
-            taggableMainContent = (<iframe src={props.taggable.url + youtubeEmbedExtras}></iframe>);
+            taggableMainContent = (
+                <>
+                    <iframe src={props.taggable.url + youtubeEmbedExtras}></iframe>
+                    <p>{props.taggable.description}</p>
+                </>
+            );
             break;
     }
 
@@ -52,7 +65,7 @@ function Post(props) {
 
 
 
-                {/* post-message */}
+                {/* taggable main-content */}
                 <div className="taggableMainContentHolder justify-content-left">{taggableMainContent}</div>
 
 
@@ -60,7 +73,8 @@ function Post(props) {
                 <RateBar />
 
 
-
+                {/* comments */}
+                <div className="justify-content-left">{comments}</div>
 
 
                 {/* replies-container */}
