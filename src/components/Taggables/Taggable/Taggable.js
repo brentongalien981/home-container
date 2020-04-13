@@ -70,7 +70,7 @@ function Post(props) {
 
 
                 {/* response-bar */}
-                <RateBar />
+                <RateBar rateable={props.taggable.rateable} />
 
 
                 {/* comments */}
