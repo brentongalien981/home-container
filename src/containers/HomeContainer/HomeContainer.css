@@ -46,3 +46,9 @@
     padding: .2rem .5rem;
     font-size: 0.7rem;
 }
+
+#HomeContainerRef {
+    width: 500px;
+    height: 5px;
+    background-color: red;
+}

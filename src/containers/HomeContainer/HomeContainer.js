@@ -3,6 +3,7 @@ import Core from '../../ysp-core/Core';
 import './HomeContainer.css';
 import Taggable from '../../components/Taggables/Taggable/Taggable';
 import FollowButton from '../../components/FollowButton/FollowButton';
+import MygComponentHelper from '../../ysp-core/MygComponentHelper';
 
 
 class HomeContainer extends React.Component {
@@ -14,18 +15,19 @@ class HomeContainer extends React.Component {
         super(props);
 
         this.state = {
+            isReadingTaggables: false,
+            hasNoMoreItemsToRecommend: false,
             taggables: [],
             friendSuggestions: [],
             alreadyRecommendedVideoIds: [],
             alreadyRecommendedPhotoIds: [],
             alreadyRecommendedTimelinePostIds: [],
-            numOfItemsWantedPerSort: 10
+            numOfItemsWantedPerSort: 5
         };
 
 
         //
         this.handleFollowBtnClicked = this.handleFollowBtnClicked.bind(this);
-
     }
 
 
@@ -122,21 +124,55 @@ class HomeContainer extends React.Component {
 
 
 
-    initItems() {
+    setScrollListener() {
+        const body = document.querySelector("body");
+
+        body.onscroll = () => {
+
+            const ref = document.querySelector("#HomeContainerRef");
+            if (MygComponentHelper.canReadMoreObjs({ ref: ref })) {
+                this.readTaggables();
+            }
+        };
+    }
+
+
+
+    readTaggables() {
+        if (this.state.isReadingTaggables) { return; }
+        if (this.state.hasNoMoreItemsToRecommend) { 
+            console.log("\n\n\nSorry, there hasNoMoreItemsToRecommend...");
+            return; 
+        }
+
+        this.setState({ isReadingTaggables: true });
 
         // taggables
         Core.yspCrud({
             url: '/taggable/getSuggestions',
             params: {
                 api_token: this.props.token,
-                numOfItemsWanted: this.state.numOfItemsWantedPerSort
+                numOfItemsWanted: this.state.numOfItemsWantedPerSort,
+                alreadyRecommendedPhotoIds: this.state.alreadyRecommendedPhotoIds,
+                alreadyRecommendedTimelinePostIds: this.state.alreadyRecommendedTimelinePostIds,
+                alreadyRecommendedVideoIds: this.state.alreadyRecommendedVideoIds
             },
+            neededResponseParams: ["hasNoMoreItemsToRecommend"],
             callBackFunc: (requestData, json) => {
                 this.setTaggables(json.objs);
+                this.setState({
+                    isReadingTaggables: false,
+                    hasNoMoreItemsToRecommend: json.hasNoMoreItemsToRecommend
+                });
             }
         });
+    }
 
 
+
+    initItems() {
+
+        this.readTaggables();
 
         // friendSuggestions
         Core.yspCrud({
@@ -163,7 +199,8 @@ class HomeContainer extends React.Component {
 
     componentDidMount() {
 
-        // ish
+        this.setScrollListener();
+
         Core.yspCrud({
             url: '/rate/read',
             params: {
@@ -237,6 +274,7 @@ class HomeContainer extends React.Component {
                     {taggablesHolder}
                     {friendSuggestionsComponent}
                 </div>
+                <div id="HomeContainerRef"></div>
             </div>
         );
     }
