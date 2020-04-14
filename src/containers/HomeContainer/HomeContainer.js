@@ -28,6 +28,55 @@ class HomeContainer extends React.Component {
 
         //
         this.handleFollowBtnClicked = this.handleFollowBtnClicked.bind(this);
+        this.handleViewMoreCommentsClicked = this.handleViewMoreCommentsClicked.bind(this);
+    }
+
+
+
+    handleViewMoreCommentsClicked(commentable, i) {
+        console.log("\n\n\nin METHOD:: handleViewMoreCommentsClicked()");
+
+        const url = "/comments/readJson";
+
+        Core.yspCrud({
+            url: url,
+            params: {
+                api_token: this.props.token,
+                commentableId: commentable.id,
+                commentableType: commentable.type,
+                numOfDisplayedComments: commentable.comments.length
+            },
+            callBackFunc: (requestData, json) => {
+                //ish
+                // Check if some newComments may be duplicated from the oldComments.
+                const oldComments = commentable.comments;
+                const newComments = json.objs;
+                let actualNewComments = [];
+
+                newComments.forEach(newComment => {
+
+                    let isNewCommentAlreadyDisplayed = false;
+
+                    oldComments.forEach(oldComment => {
+                        if (oldComment.id === newComment.id) {
+                            isNewCommentAlreadyDisplayed = true;
+                        }
+                    });
+
+                    if (!isNewCommentAlreadyDisplayed) {
+                        actualNewComments.push(newComment);
+                    }
+                });
+
+
+                // Update the comments.
+                const updatedComments = [...oldComments, ...actualNewComments];
+                let updatedTaggables = this.state.taggables;
+                updatedTaggables[i].comments = updatedComments;
+
+                this.setState({ taggables: updatedTaggables });
+            }
+        });
     }
 
 
@@ -83,6 +132,7 @@ class HomeContainer extends React.Component {
             let topXTaggables = element.orderByTally.xTaggables;
 
 
+            // 
             for (let i = 0; i < this.state.numOfItemsWantedPerSort; i++) {
                 let recentElement = recentXTaggables[i];
                 let topElement = topXTaggables[i];
@@ -102,7 +152,7 @@ class HomeContainer extends React.Component {
 
         // Mix the taggables.
         let newTaggables = [];
-        for (let i = 0; i < this.state.numOfItemsWantedPerSort; i++) {
+        for (let i = 0; i < this.state.numOfItemsWantedPerSort * 2; i++) {
             if (xTaggables.TimelinePost[i]) { newTaggables.push(xTaggables.TimelinePost[i]); }
             if (xTaggables.Video[i]) { newTaggables.push(xTaggables.Video[i]); }
             // if (xTaggables.Photo[i]) { newTaggables.push(xTaggables.Photo[i]); }
@@ -140,9 +190,9 @@ class HomeContainer extends React.Component {
 
     readTaggables() {
         if (this.state.isReadingTaggables) { return; }
-        if (this.state.hasNoMoreItemsToRecommend) { 
+        if (this.state.hasNoMoreItemsToRecommend) {
             console.log("\n\n\nSorry, there hasNoMoreItemsToRecommend...");
-            return; 
+            return;
         }
 
         this.setState({ isReadingTaggables: true });
@@ -219,7 +269,8 @@ class HomeContainer extends React.Component {
 
         // TODO: Refactor
         let taggables = this.state.taggables.map((taggable, i) => {
-            return (<Taggable key={i} taggable={taggable} />);
+            //ish
+            return (<Taggable key={i} taggable={taggable} viewMoreCommentsClicked={() => { this.handleViewMoreCommentsClicked(taggable, i) }} />);
         });
 
         let taggablesHolder = (

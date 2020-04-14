@@ -77,16 +77,12 @@ function Post(props) {
                 <RateBar rateable={props.taggable.rateable} />
 
 
-                {/* comments */}
-                <div className="justify-content-left">{comments}</div>
-
-
                 {/* replies-container */}
-                <div className="repliesContainer justify-content-left"></div>
+                <div className="repliesContainer justify-content-left">{comments}</div>
 
                 {/* view-more-replies-btn */}
                 <div className="viewMoreCommentsBtnHolder justify-content-left">
-                    <button className="">view more comments</button>
+                    <button className="" onClick={props.viewMoreCommentsClicked}>view more comments</button>
                 </div>
 
 
