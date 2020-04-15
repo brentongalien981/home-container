@@ -66,16 +66,59 @@ class HomeContainer extends React.Component {
                 subscriptionableId: taggable.id,
                 subscriptionableType: taggable.type
             },
+            neededResponseParams: ["subscription"],
             callBackFunc: (requestData, json) => {
-                // TODO
+
+                let updatedTaggables = this.state.taggables;
+                let updatedTaggable = updatedTaggables[i];
+
+                //
+                const newSubscription = json.subscription;
+                updatedTaggable.subscriptionDetails = {
+                    isUserSubscribed: true,
+                    subscriptionId: newSubscription.id
+                };
+
+                //
+                updatedTaggables[i] = updatedTaggable;
+
+                this.setState({ taggables: updatedTaggables });
+
             }
         });
     }
 
 
 
-    handleUnsubscribeToTaggableClicked() {
+    handleUnsubscribeToTaggableClicked(taggable, i) {
+        
+        const url = "/subscriptions";
 
+        Core.yspCrud({
+            method: 'delete',
+            url: url,
+            params: {
+                api_token: this.props.token,
+                subscriptionId: taggable.subscriptionDetails.subscriptionId
+            },
+            callBackFunc: (requestData, json) => {
+
+                let updatedTaggables = this.state.taggables;
+                let updatedTaggable = updatedTaggables[i];
+
+                //
+                updatedTaggable.subscriptionDetails = {
+                    isUserSubscribed: false,
+                    subscriptionId: null
+                };
+
+                //
+                updatedTaggables[i] = updatedTaggable;
+
+                this.setState({ taggables: updatedTaggables });
+
+            }
+        });
     }
 
 

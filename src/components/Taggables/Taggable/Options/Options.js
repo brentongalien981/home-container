@@ -10,9 +10,14 @@ function Options(props) {
 
     const style = props.isVisible ? { display: "block" } : { display: "none" };
 
+    let subscriptionOption = (<li onClick={() => taggableContext.subscribeToTaggableClicked(props.taggable, props.taggableIndex)}>Notifiy me about this post</li>);
+    if (props.taggable.subscriptionDetails.isUserSubscribed) {
+        subscriptionOption = (<li onClick={() => taggableContext.unsubscribeToTaggableClicked(props.taggable, props.taggableIndex)}>Unsubscribe to this post</li>);
+    }
+
     return (
         <ul className="Options" style={style}>
-            <li onClick={() => taggableContext.subscribeToTaggableClicked(props.taggable, props.taggableIndex)}>Notifiy me about this post</li>
+            {subscriptionOption}
             <li>Edit</li>
             <li>Delete</li>
         </ul>
