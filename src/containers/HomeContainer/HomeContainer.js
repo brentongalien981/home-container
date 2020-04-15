@@ -4,37 +4,105 @@ import './HomeContainer.css';
 import Taggable from '../../components/Taggables/Taggable/Taggable';
 import FollowButton from '../../components/FollowButton/FollowButton';
 import MygComponentHelper from '../../ysp-core/MygComponentHelper';
+import TaggableContext from '../../context/TaggableContext';
 
 
 class HomeContainer extends React.Component {
 
     //
     static rates = [];
+    static rateOptionVisibilityHandler = null;
+
+    // React's context.
+    static contextType = TaggableContext;
+    
 
     constructor(props) {
         super(props);
 
         this.state = {
             isReadingTaggables: false,
+            isReadingComments: false,
             hasNoMoreItemsToRecommend: false,
             taggables: [],
             friendSuggestions: [],
             alreadyRecommendedVideoIds: [],
             alreadyRecommendedPhotoIds: [],
             alreadyRecommendedTimelinePostIds: [],
-            numOfItemsWantedPerSort: 5
+            numOfItemsWantedPerSort: 5,
+            lastHoveredTaggableId: 0,
+            // rateOptionVisibilityHandler: null
         };
 
 
         //
         this.handleFollowBtnClicked = this.handleFollowBtnClicked.bind(this);
         this.handleViewMoreCommentsClicked = this.handleViewMoreCommentsClicked.bind(this);
+
+        this.handleRateOptionTriggerHovered = this.handleRateOptionTriggerHovered.bind(this);
+        this.handleRateOptionTriggerUnhovered = this.handleRateOptionTriggerUnhovered.bind(this);
+
+    }
+
+
+
+    //ish
+    handleRateOptionTriggerHovered(taggableId, taggableIndex) {
+        console.log("\n\n\nin METHOD:: handleRateOptionTriggerHovered()");
+        console.log("taggableId ==> " + taggableId);
+        console.log("taggableIndex ==> " + taggableIndex);
+
+        //
+        if (this.state.lastHoveredTaggableId === taggableId) {
+            // Invalidate the rateOptionVisibilityHandler
+            clearTimeout(HomeContainer.rateOptionVisibilityHandler);
+        }
+
+
+        //
+        let updatedTaggables = this.state.taggables;
+        let updatedTaggable = updatedTaggables[taggableIndex];
+
+        // Show the rateOption
+        updatedTaggable.isRateOptionsVisible = true;
+
+        //
+        updatedTaggables[taggableIndex] = updatedTaggable;
+        this.setState({ 
+            lastHoveredTaggableId: taggableId,
+            taggables: updatedTaggables 
+        });
+    }
+
+
+
+    handleRateOptionTriggerUnhovered(taggableId, taggableIndex) {
+        console.log("\n\n\nin METHOD:: handleRateOptionTriggerUnhovered()");
+        console.log("taggableId ==> " + taggableId);
+        console.log("taggableIndex ==> " + taggableIndex);
+
+
+        HomeContainer.rateOptionVisibilityHandler = setTimeout(() => {
+
+            let updatedTaggables = this.state.taggables;
+            let updatedTaggable = updatedTaggables[taggableIndex];
+            updatedTaggable.isRateOptionsVisible = false;
+
+            updatedTaggables[taggableIndex] = updatedTaggable;
+
+            this.setState({ taggables: updatedTaggables });
+        }, 1000);
+
     }
 
 
 
     handleViewMoreCommentsClicked(commentable, i) {
+        if (this.state.isReadingComments) { return; }
+
         console.log("\n\n\nin METHOD:: handleViewMoreCommentsClicked()");
+
+        this.setState({ isReadingComments: true });
 
         const url = "/comments/readJson";
 
@@ -47,7 +115,7 @@ class HomeContainer extends React.Component {
                 numOfDisplayedComments: commentable.comments.length
             },
             callBackFunc: (requestData, json) => {
-                //ish
+
                 // Check if some newComments may be duplicated from the oldComments.
                 const oldComments = commentable.comments;
                 const newComments = json.objs;
@@ -74,7 +142,10 @@ class HomeContainer extends React.Component {
                 let updatedTaggables = this.state.taggables;
                 updatedTaggables[i].comments = updatedComments;
 
-                this.setState({ taggables: updatedTaggables });
+                this.setState({
+                    taggables: updatedTaggables,
+                    isReadingComments: false
+                });
             }
         });
     }
@@ -139,10 +210,14 @@ class HomeContainer extends React.Component {
 
                 if (recentElement != null) {
                     recentElement.type = type;
+                    recentElement.rateOptionVisibilityHandler = null;
+                    recentElement.isRateOptionsVisible = false;
                     xTaggables[type].push(recentElement);
                 }
                 if (topElement != null) {
                     topElement.type = type;
+                    topElement.rateOptionVisibilityHandler = null;
+                    recentElement.isRateOptionsVisible = false;
                     xTaggables[type].push(topElement);
                 }
             }
@@ -247,9 +322,19 @@ class HomeContainer extends React.Component {
 
 
 
+    setMyContext() {
+        this.context.rateOptionTriggerHovered = this.handleRateOptionTriggerHovered;
+        this.context.rateOptionTriggerUnhovered = this.handleRateOptionTriggerUnhovered;
+    }
+
+
+
     componentDidMount() {
 
+        //
+        this.setMyContext();
         this.setScrollListener();
+
 
         Core.yspCrud({
             url: '/rate/read',
@@ -270,7 +355,7 @@ class HomeContainer extends React.Component {
         // TODO: Refactor
         let taggables = this.state.taggables.map((taggable, i) => {
             //ish
-            return (<Taggable key={i} taggable={taggable} viewMoreCommentsClicked={() => { this.handleViewMoreCommentsClicked(taggable, i) }} />);
+            return (<Taggable key={i} index={i} taggable={taggable} viewMoreCommentsClicked={() => { this.handleViewMoreCommentsClicked(taggable, i) }} />);
         });
 
         let taggablesHolder = (

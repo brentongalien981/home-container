@@ -5,6 +5,8 @@ import './RateOptions.css';
 
 function RateOptions(props) {
 
+    const style = props.isVisible ? { display: "block" } : { display: "none" };
+
     const rateOptions = HomeContainer.rates.map((rate, i) => {
         return (
             <div key={rate.id} className="rate-option rate-options-pop-up-trigger-elelements orange-hovered-shadow" rate-value={rate.value}>
@@ -16,7 +18,7 @@ function RateOptions(props) {
 
 
     return (
-        <div id="rate-options-pop-up" className="rate-options-pop-up-trigger-elelements">
+        <div id="rate-options-pop-up" style={style} className="rate-options-pop-up-trigger-elelements">
             <div className="rate-options-pop-up-trigger-elelements">{rateOptions}</div>
         </div>
     );
