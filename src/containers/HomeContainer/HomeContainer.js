@@ -46,15 +46,41 @@ class HomeContainer extends React.Component {
 
         this.handleSettingsOptionsTriggerHovered = this.handleSettingsOptionsTriggerHovered.bind(this);
         this.handleSettingsOptionsTriggerUnhovered = this.handleSettingsOptionsTriggerUnhovered.bind(this);
+
+        this.handleSubscribeToTaggableClicked = this.handleSubscribeToTaggableClicked.bind(this);
+        this.handleUnsubscribeToTaggableClicked = this.handleUnsubscribeToTaggableClicked.bind(this);
     }
 
 
 
     //ish
+    handleSubscribeToTaggableClicked(taggable, i) {
+
+        const url = "/subscriptions/";
+
+        Core.yspCrud({
+            method: 'post',
+            url: url,
+            params: {
+                api_token: this.props.token,
+                subscriptionableId: taggable.id,
+                subscriptionableType: taggable.type
+            },
+            callBackFunc: (requestData, json) => {
+                // TODO
+            }
+        });
+    }
+
+
+
+    handleUnsubscribeToTaggableClicked() {
+
+    }
+
+
+
     handleSettingsOptionsTriggerHovered(taggableId, taggableIndex) {
-        console.log("\n\n\nin METHOD:: handleSettingsOptionsTriggerHovered()");
-        console.log("taggableId ==> " + taggableId);
-        console.log("taggableIndex ==> " + taggableIndex);
 
         //
         if (this.state.lastHoveredSettingsOptionsTaggableId === taggableId) {
@@ -80,9 +106,6 @@ class HomeContainer extends React.Component {
 
 
     handleSettingsOptionsTriggerUnhovered(taggableId, taggableIndex) {
-        console.log("\n\n\nin METHOD:: handleSettingsOptionsTriggerUnhovered()");
-        console.log("taggableId ==> " + taggableId);
-        console.log("taggableIndex ==> " + taggableIndex);
 
         HomeContainer.settingsOptionsVisibilityHandler = setTimeout(() => {
 
@@ -99,9 +122,6 @@ class HomeContainer extends React.Component {
 
 
     handleRateOptionTriggerHovered(taggableId, taggableIndex) {
-        console.log("\n\n\nin METHOD:: handleRateOptionTriggerHovered()");
-        console.log("taggableId ==> " + taggableId);
-        console.log("taggableIndex ==> " + taggableIndex);
 
         //
         if (this.state.lastHoveredTaggableId === taggableId) {
@@ -128,10 +148,6 @@ class HomeContainer extends React.Component {
 
 
     handleRateOptionTriggerUnhovered(taggableId, taggableIndex) {
-        console.log("\n\n\nin METHOD:: handleRateOptionTriggerUnhovered()");
-        console.log("taggableId ==> " + taggableId);
-        console.log("taggableIndex ==> " + taggableIndex);
-
 
         HomeContainer.rateOptionVisibilityHandler = setTimeout(() => {
 
@@ -380,6 +396,9 @@ class HomeContainer extends React.Component {
 
         this.context.settingsOptionsTriggerHovered = this.handleSettingsOptionsTriggerHovered;
         this.context.settingsOptionsTriggerUnhovered = this.handleSettingsOptionsTriggerUnhovered;
+
+        this.context.subscribeToTaggableClicked = this.handleSubscribeToTaggableClicked;
+        this.context.unsubscribeToTaggableClicked = this.handleUnsubscribeToTaggableClicked;
     }
 
 

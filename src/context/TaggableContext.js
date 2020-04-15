@@ -5,6 +5,8 @@ const TaggableContext = React.createContext({
     rateOptionTriggerUnhovered: () => {},
     settingsOptionsTriggerHovered: () => {},
     settingsOptionsTriggerUnhovered: () => {},
+    subscribeToTaggableClicked: () => {},
+    unsubscribeToTaggableClicked: () => {},
 });
 
 export default TaggableContext;

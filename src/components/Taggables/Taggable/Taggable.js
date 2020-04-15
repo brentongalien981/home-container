@@ -68,7 +68,7 @@ function Post(props) {
                         onMouseOverCapture={() => taggableContext.settingsOptionsTriggerHovered(props.taggable.id, props.index)}
                         onMouseOutCapture={() => taggableContext.settingsOptionsTriggerUnhovered(props.taggable.id, props.index)}>
                         <i className="fa fa-sliders settings-icon"></i>
-                        <Options isVisible={props.taggable.isSettingsOptionsVisible} />
+                        <Options taggable={props.taggable} taggableIndex={props.index} isVisible={props.taggable.isSettingsOptionsVisible} />
                     </div>
                 </div>
 

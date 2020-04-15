@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useContext } from "react";
 import './Options.css';
+import TaggableContext from "../../../../context/TaggableContext";
 
 
 function Options(props) {
+
+    // React thing.
+    const taggableContext = useContext(TaggableContext);
 
     const style = props.isVisible ? { display: "block" } : { display: "none" };
 
     return (
         <ul className="Options" style={style}>
-            <li>Notifiy me about this post</li>
+            <li onClick={() => taggableContext.subscribeToTaggableClicked(props.taggable, props.taggableIndex)}>Notifiy me about this post</li>
             <li>Edit</li>
             <li>Delete</li>
         </ul>
