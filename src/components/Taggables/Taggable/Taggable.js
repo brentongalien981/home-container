@@ -98,9 +98,11 @@ function Post(props) {
 
                 {/* new-reply-form */}
                 <div id="" className="replyForm justify-content-left">
-                    <textarea placeholder="Comment here..." rows="4" cols="70"></textarea>
+                    <textarea id={"textarea-" + props.taggable.type + "-" + props.taggable.id} placeholder="Comment here..." rows="4" cols="70"
+                        onChange={(e) => props.newCommentChanged(e, props.index)}></textarea>
                     <br />
-                    <button className="btn btn-info btn-sm">submit</button>
+                    <button className="btn btn-info btn-sm"
+                        onClick={() => props.newCommentBtnClicked(props.taggable)}>submit</button>
                 </div>
 
             </div>

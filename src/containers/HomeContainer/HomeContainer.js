@@ -24,6 +24,7 @@ class HomeContainer extends React.Component {
         this.state = {
             isReadingTaggables: false,
             isReadingComments: false,
+            isCreatingComment: false,
             hasNoMoreItemsToRecommend: false,
             taggables: [],
             friendSuggestions: [],
@@ -41,6 +42,10 @@ class HomeContainer extends React.Component {
         this.handleFollowBtnClicked = this.handleFollowBtnClicked.bind(this);
         this.handleViewMoreCommentsClicked = this.handleViewMoreCommentsClicked.bind(this);
 
+        this.handleNewCommentChanged = this.handleNewCommentChanged.bind(this);
+        this.handleNewCommentBtnClicked = this.handleNewCommentBtnClicked.bind(this);
+
+
         this.handleRateOptionTriggerHovered = this.handleRateOptionTriggerHovered.bind(this);
         this.handleRateOptionTriggerUnhovered = this.handleRateOptionTriggerUnhovered.bind(this);
 
@@ -53,7 +58,71 @@ class HomeContainer extends React.Component {
 
 
 
+    handleNewCommentChanged(e, i) {
+
+        let updatedTaggables = this.state.taggables;
+        let updatedTaggable = updatedTaggables[i];
+        updatedTaggable.newComment = e.target.value;
+
+        //
+        updatedTaggables[i] = updatedTaggable;
+
+        this.setState({ taggables: updatedTaggables });
+    }
+
+
+
     //ish
+    handleNewCommentBtnClicked(taggable) {
+
+        //
+        if (taggable.newComment.length <= 2) { return; }
+        if (this.state.isCreatingComment) { return; }
+
+
+        //
+        let commentableTypeId = null;
+        switch (taggable.type) {
+            case "TimelinePost":
+                commentableTypeId = 1;
+                break;
+            case "Video":
+                commentableTypeId = 2;
+                break;
+            case "Photo":
+                commentableTypeId = 3;
+                break;
+        }
+
+
+        //
+        Core.yspCrud({
+            method: "post",
+            url: "/comments/create",
+            params: {
+                api_token: this.props.token,
+                ownerUserId: taggable.ownerUserId,
+                commentableId: taggable.id,
+                commentableTypeId: commentableTypeId,
+                message: taggable.newComment
+            },
+            neededResponseParams: ["comment"],
+            callBackFunc: (requestData, json) => {
+
+                // Reset the textarea.
+                if (json.isResultOk) {
+                    const targetTextareaId = "textarea-" + taggable.type + "-" + taggable.id;
+                    const textarea = document.querySelector("#" + targetTextareaId);
+                    textarea.value = "";
+                }
+
+                this.setState({ isCreatingComment: false });
+            }
+        });
+    }
+
+
+
     handleSubscribeToTaggableClicked(taggable, i) {
 
         const url = "/subscriptions/";
@@ -91,7 +160,7 @@ class HomeContainer extends React.Component {
 
 
     handleUnsubscribeToTaggableClicked(taggable, i) {
-        
+
         const url = "/subscriptions";
 
         Core.yspCrud({
@@ -323,12 +392,14 @@ class HomeContainer extends React.Component {
                     recentElement.type = type;
                     recentElement.isRateOptionsVisible = false;
                     recentElement.isSettingsOptionsVisible = false;
+                    recentElement.newComment = "";
                     xTaggables[type].push(recentElement);
                 }
                 if (topElement != null) {
                     topElement.type = type;
                     topElement.isRateOptionsVisible = false;
                     topElement.isSettingsOptionsVisible = false;
+                    topElement.newComment = "";
                     xTaggables[type].push(topElement);
                 }
             }
@@ -472,7 +543,14 @@ class HomeContainer extends React.Component {
         // TODO: Refactor
         let taggables = this.state.taggables.map((taggable, i) => {
             //ish
-            return (<Taggable key={i} index={i} taggable={taggable} viewMoreCommentsClicked={() => { this.handleViewMoreCommentsClicked(taggable, i) }} />);
+            return (
+                <Taggable key={i}
+                    index={i}
+                    taggable={taggable}
+                    viewMoreCommentsClicked={() => { this.handleViewMoreCommentsClicked(taggable, i) }}
+                    newCommentChanged={this.handleNewCommentChanged}
+                    newCommentBtnClicked={this.handleNewCommentBtnClicked} />
+            );
         });
 
         let taggablesHolder = (
