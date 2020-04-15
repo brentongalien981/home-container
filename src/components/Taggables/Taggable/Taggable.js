@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useContext } from "react";
 import RateBar from '../../Rateables/RateBar/RateBar';
 import './Taggable.css';
 import Core from '../../../ysp-core/Core';
 import Comment from '../../Comment/Comment';
 import Options from './Options/Options';
+import TaggableContext from "../../../context/TaggableContext";
+
 
 function Post(props) {
 
+    // React thing.
+    const taggableContext = useContext(TaggableContext);
 
     let taggableMainContent = null;
 
@@ -60,9 +64,11 @@ function Post(props) {
 
 
                     {/* post-settings-icon */}
-                    <div className="settings-icon-container">
+                    <div className="settings-icon-container"
+                        onMouseOverCapture={() => taggableContext.settingsOptionsTriggerHovered(props.taggable.id, props.index)}
+                        onMouseOutCapture={() => taggableContext.settingsOptionsTriggerUnhovered(props.taggable.id, props.index)}>
                         <i className="fa fa-sliders settings-icon"></i>
-                        <Options />
+                        <Options isVisible={props.taggable.isSettingsOptionsVisible} />
                     </div>
                 </div>
 

@@ -12,10 +12,11 @@ class HomeContainer extends React.Component {
     //
     static rates = [];
     static rateOptionVisibilityHandler = null;
+    static settingsOptionsVisibilityHandler = null;
 
     // React's context.
     static contextType = TaggableContext;
-    
+
 
     constructor(props) {
         super(props);
@@ -31,6 +32,7 @@ class HomeContainer extends React.Component {
             alreadyRecommendedTimelinePostIds: [],
             numOfItemsWantedPerSort: 5,
             lastHoveredTaggableId: 0,
+            lastHoveredSettingsOptionsTaggableId: 0
             // rateOptionVisibilityHandler: null
         };
 
@@ -42,11 +44,60 @@ class HomeContainer extends React.Component {
         this.handleRateOptionTriggerHovered = this.handleRateOptionTriggerHovered.bind(this);
         this.handleRateOptionTriggerUnhovered = this.handleRateOptionTriggerUnhovered.bind(this);
 
+        this.handleSettingsOptionsTriggerHovered = this.handleSettingsOptionsTriggerHovered.bind(this);
+        this.handleSettingsOptionsTriggerUnhovered = this.handleSettingsOptionsTriggerUnhovered.bind(this);
     }
 
 
 
     //ish
+    handleSettingsOptionsTriggerHovered(taggableId, taggableIndex) {
+        console.log("\n\n\nin METHOD:: handleSettingsOptionsTriggerHovered()");
+        console.log("taggableId ==> " + taggableId);
+        console.log("taggableIndex ==> " + taggableIndex);
+
+        //
+        if (this.state.lastHoveredSettingsOptionsTaggableId === taggableId) {
+            // Invalidate the settingsOptionsVisibilityHandler
+            clearTimeout(HomeContainer.settingsOptionsVisibilityHandler);
+        }
+
+        //
+        let updatedTaggables = this.state.taggables;
+        let updatedTaggable = updatedTaggables[taggableIndex];
+
+        // Show the rateOption
+        updatedTaggable.isSettingsOptionsVisible = true;
+
+        //
+        updatedTaggables[taggableIndex] = updatedTaggable;
+        this.setState({
+            lastHoveredSettingsOptionsTaggableId: taggableId,
+            taggables: updatedTaggables
+        });
+    }
+
+
+
+    handleSettingsOptionsTriggerUnhovered(taggableId, taggableIndex) {
+        console.log("\n\n\nin METHOD:: handleSettingsOptionsTriggerUnhovered()");
+        console.log("taggableId ==> " + taggableId);
+        console.log("taggableIndex ==> " + taggableIndex);
+
+        HomeContainer.settingsOptionsVisibilityHandler = setTimeout(() => {
+
+            let updatedTaggables = this.state.taggables;
+            let updatedTaggable = updatedTaggables[taggableIndex];
+            updatedTaggable.isSettingsOptionsVisible = false;
+
+            updatedTaggables[taggableIndex] = updatedTaggable;
+
+            this.setState({ taggables: updatedTaggables });
+        }, 1000);
+    }
+
+
+
     handleRateOptionTriggerHovered(taggableId, taggableIndex) {
         console.log("\n\n\nin METHOD:: handleRateOptionTriggerHovered()");
         console.log("taggableId ==> " + taggableId);
@@ -68,9 +119,9 @@ class HomeContainer extends React.Component {
 
         //
         updatedTaggables[taggableIndex] = updatedTaggable;
-        this.setState({ 
+        this.setState({
             lastHoveredTaggableId: taggableId,
-            taggables: updatedTaggables 
+            taggables: updatedTaggables
         });
     }
 
@@ -185,6 +236,7 @@ class HomeContainer extends React.Component {
 
 
 
+    // ish
     setTaggables(data) {
         console.log("\n\n\nin method:: setTaggables()");
 
@@ -210,14 +262,14 @@ class HomeContainer extends React.Component {
 
                 if (recentElement != null) {
                     recentElement.type = type;
-                    recentElement.rateOptionVisibilityHandler = null;
                     recentElement.isRateOptionsVisible = false;
+                    recentElement.isSettingsOptionsVisible = false;
                     xTaggables[type].push(recentElement);
                 }
                 if (topElement != null) {
                     topElement.type = type;
-                    topElement.rateOptionVisibilityHandler = null;
-                    recentElement.isRateOptionsVisible = false;
+                    topElement.isRateOptionsVisible = false;
+                    topElement.isSettingsOptionsVisible = false;
                     xTaggables[type].push(topElement);
                 }
             }
@@ -325,6 +377,9 @@ class HomeContainer extends React.Component {
     setMyContext() {
         this.context.rateOptionTriggerHovered = this.handleRateOptionTriggerHovered;
         this.context.rateOptionTriggerUnhovered = this.handleRateOptionTriggerUnhovered;
+
+        this.context.settingsOptionsTriggerHovered = this.handleSettingsOptionsTriggerHovered;
+        this.context.settingsOptionsTriggerUnhovered = this.handleSettingsOptionsTriggerUnhovered;
     }
 
 
