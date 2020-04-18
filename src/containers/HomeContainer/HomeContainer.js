@@ -25,6 +25,7 @@ class HomeContainer extends React.Component {
             isReadingTaggables: false,
             isReadingComments: false,
             isCreatingComment: false,
+            isRating: false,
             hasNoMoreItemsToRecommend: false,
             taggables: [],
             friendSuggestions: [],
@@ -54,6 +55,59 @@ class HomeContainer extends React.Component {
 
         this.handleSubscribeToTaggableClicked = this.handleSubscribeToTaggableClicked.bind(this);
         this.handleUnsubscribeToTaggableClicked = this.handleUnsubscribeToTaggableClicked.bind(this);
+
+        this.handleRateOptionClicked = this.handleRateOptionClicked.bind(this);
+    }
+
+
+
+    handleRateOptionClicked(rateable, i, rateValue) {
+
+        if (this.state.isRating) { return; }
+
+
+        //
+        let rateableTypeId = 0;
+        switch (rateable.type) {
+            case "TimelinePost":
+                rateableTypeId = 1;
+                break;
+            case "Video":
+                rateableTypeId = 2;
+                break;
+            case "Photo":
+                rateableTypeId = 3;
+                break;
+        }
+
+
+
+        //
+        Core.yspCrud({
+            method: "patch",
+            url: "/rateables",
+            params: {
+                api_token: this.props.token,
+                rateableId: rateable.id,
+                rateableTypeId: rateableTypeId,
+                rateValue: rateValue
+            },
+            neededResponseParams: ["rateable"],
+            callBackFunc: (requestData, json) => {
+
+                const updatedRateable = json.rateable;
+                const updatedTaggable = rateable;
+                updatedTaggable.rateable = updatedRateable;
+
+                let updatedTaggables = this.state.taggables;
+                updatedTaggables[i] = updatedTaggable;
+                
+                this.setState({ 
+                    taggables: updatedTaggables,
+                    isRating: false 
+                });
+            }
+        });
     }
 
 
@@ -72,7 +126,6 @@ class HomeContainer extends React.Component {
 
 
 
-    //ish
     handleNewCommentBtnClicked(taggable) {
 
         //
@@ -513,6 +566,8 @@ class HomeContainer extends React.Component {
 
         this.context.subscribeToTaggableClicked = this.handleSubscribeToTaggableClicked;
         this.context.unsubscribeToTaggableClicked = this.handleUnsubscribeToTaggableClicked;
+
+        this.context.rateOptionClicked = this.handleRateOptionClicked;
     }
 
 

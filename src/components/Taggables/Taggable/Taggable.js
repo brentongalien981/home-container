@@ -81,6 +81,7 @@ function Post(props) {
 
                 {/* response-bar */}
                 <RateBar rateable={props.taggable.rateable}
+                    taggable={props.taggable}
                     taggableId={props.taggable.id}
                     taggableIndex={props.index}
                     isRateOptionsVisible={props.taggable.isRateOptionsVisible} />

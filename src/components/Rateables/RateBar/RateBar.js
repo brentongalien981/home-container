@@ -42,7 +42,9 @@ function RateBar(props) {
                         alt={rateByUser.alt} />
 
                     {/*  */}
-                    <RateOptions isVisible={props.isRateOptionsVisible} />
+                    <RateOptions isVisible={props.isRateOptionsVisible}
+                        taggable={props.taggable}
+                        taggableIndex={props.taggableIndex} />
                 </div>
 
 
